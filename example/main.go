@@ -109,4 +109,11 @@ func main() {
 		fmt.Println("extracted slices ->", sl)
 	}
 	fmt.Println("original  slice  ->", slicePtr)
+
+	// TODO FIXME
+	fmt.Println("[]UniqueType")
+	type AgeInt int
+	sliceUnique := []AgeInt{1,2,3,3}
+	fmt.Println(dedupe.Do(&sliceUnique))
+	fmt.Println("original  slice  ->", sliceUnique)
 }
