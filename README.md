@@ -16,19 +16,21 @@ import (
 )
 // Basic usage
 sliceString := []string{"Go", "V", "C++", "Java", "Python", "Go", "Ruby", "C++", "Go", "V"}
-dedupe.Do(sliceString)
+dedupe.Do(&sliceString)  // Be sure to pass it by address
 fmt.Println(sliceString) // change original slice
 
 // Extract duplicates without changing the original slice
 // But: If it is a structure, you must cast it yourself
 sliceFloat64 := []float64{0.1, 0.1, 0.2, 0.2, 0.3, 0.3}
-dup.Do(&sliceFloat64)
+dup.Do(&sliceFloat64) // Be sure to pass it by address
 fmt.Println(dup.Float64())
 fmt.Println(sliceFloat64)
 ```
 ### Result
 ```
 [C++ Go Java Python Ruby V]
+[0.1 0.2 0.3]
+[0.1 0.1 0.2 0.2 0.3 0.3]
 ```
 Check [Go Playground](https://play.golang.org/p/vyphUn0Lx1E)
 
