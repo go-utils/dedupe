@@ -64,7 +64,7 @@ func (d *Deduplication) duplicationBool() reflect.Value {
 		}
 	}
 	sort.Slice(d.SliceBool, func(i, j int) bool { return fmt.Sprint(d.SliceBool[i]) < fmt.Sprint(d.SliceBool[j]) })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]float32{}), len(d.SliceBool), len(d.SliceBool))
+	newSlice := reflect.MakeSlice(reflect.TypeOf([]bool{}), len(d.SliceBool), len(d.SliceBool))
 	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceBool))
 	return newSlice
 }
