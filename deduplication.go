@@ -225,7 +225,7 @@ func (d *Deduplication) Do(args interface{}) error {
 		case reflect.Struct, reflect.Ptr:
 			value = d.duplicationStruct(args)
 		default:
-			return xerrors.Errorf("invalid type: %v", types)
+			return xerrors.Errorf("invalid type: %#v", types)
 		}
 	}
 
