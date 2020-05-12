@@ -1,3 +1,6 @@
+/*
+Package dedupe - Deduplication among various types of slices
+*/
 package dedupe
 
 import (
@@ -9,7 +12,7 @@ import (
 )
 
 // Deduplication duplicate exclusion
-//   └── Supports type: []bool, []float32, []float64, []int, []int64, []uint, []uint64, []string, []AnyStruct
+// supports type: []bool, []float32, []float64, []int, []int64, []uint, []uint64, []string, []AnyStruct
 type Deduplication struct {
 	SliceBool    []bool
 	SliceFloat32 []float32
@@ -34,6 +37,7 @@ func Do(args interface{}) error {
 }
 
 // NewDeduplication constructor
+// field NotChange: true
 func NewDeduplication() *Deduplication {
 	return &Deduplication{NotChange: true}
 }
