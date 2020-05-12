@@ -8,33 +8,33 @@ import (
 
 func main() {
 	dup := dedupe.NewDeduplication()
-	fmt.Println("[]string")
+	fmt.Println("Case: []string")
 	sliceStr := []string{"Go", "V", "Java", "Python", "Go", "Ruby", "Go", "V"}
 	dedupe.Do(&sliceStr)
-	fmt.Println("original  slice  ->", sliceStr)
+	fmt.Printf("original  slice -> %#v\n\n", sliceStr)
 
-	fmt.Println("[]int")
+	fmt.Println("Case: []int")
 	sliceInt := []int{1, 1, 2, 2, 3, 3}
 	dup.Do(&sliceInt)
 	if sl, err := dup.Int(); err == nil {
-		fmt.Println("extracted slices ->", sl)
+		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Println("original  slice  ->", sliceInt)
+	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceInt)
 
-	fmt.Println("[]float64")
+	fmt.Println("Case: []float64")
 	sliceFloat64 := []float64{0.1, 0.1, 0.2, 0.2, 0.3, 0.3}
 	dup.Do(&sliceFloat64)
 	if sl, err := dup.Float64(); err == nil {
-		fmt.Println("extracted slices ->", sl)
+		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Println("original  slice  ->", sliceFloat64)
+	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceFloat64)
 
 	type duplication struct {
 		Name string
 		Age  int
 	}
 
-	fmt.Println("[]struct")
+	fmt.Println("Case: []struct")
 	sliceStruct := []duplication{
 		{
 			Name: "A",
@@ -50,7 +50,7 @@ func main() {
 		},
 	}
 	dedupe.Do(&sliceStruct)
-	fmt.Println("original  slice  ->", sliceStruct)
+	fmt.Printf("original  slice -> %#v\n\n", sliceStruct)
 
 	sliceStruct = []duplication{
 		{
@@ -68,11 +68,11 @@ func main() {
 	}
 	dup.Do(&sliceStruct)
 	if sl, err := dup.Struct(); err == nil {
-		fmt.Println("extracted slices ->", sl)
+		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Println("original  slice  ->", sliceStruct)
+	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceStruct)
 
-	fmt.Println("[]Pointer")
+	fmt.Println("Case: []Pointer")
 	slicePtr := []*duplication{
 		{
 			Name: "A",
@@ -88,7 +88,7 @@ func main() {
 		},
 	}
 	dedupe.Do(&slicePtr)
-	fmt.Println("original  slice  ->", slicePtr)
+	fmt.Printf("original  slice -> %#v\n\n", slicePtr)
 
 	slicePtr = []*duplication{
 		{
@@ -106,14 +106,14 @@ func main() {
 	}
 	dup.Do(&slicePtr)
 	if sl, err := dup.Struct(); err == nil {
-		fmt.Println("extracted slices ->", sl)
+		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Println("original  slice  ->", slicePtr)
+	fmt.Printf(  "original  slice -> %#v / No change.\n\n", slicePtr)
 
 	// TODO FIXME
-	fmt.Println("[]UniqueType")
+	fmt.Println("Case: []UniqueType")
 	type AgeInt int
 	sliceUnique := []AgeInt{1,2,3,3}
 	fmt.Println(dedupe.Do(&sliceUnique))
-	fmt.Println("original  slice  ->", sliceUnique)
+	fmt.Printf("original  slice -> %#v\n\n", sliceUnique)
 }
