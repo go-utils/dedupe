@@ -206,7 +206,7 @@ func (d *Deduplication) duplicationStruct(args interface{}) reflect.Value {
 func (d *Deduplication) Do(args interface{}) error {
 	d.clear()
 	if err := d.validation(args); err != nil {
-		return xerrors.Errorf("error in validation: %w", err)
+		return xerrors.Errorf("error in validation method: %w", err)
 	}
 
 	var value reflect.Value
@@ -280,7 +280,7 @@ func (d *Deduplication) typeCheck(element reflect.Type, types ...reflect.Kind) b
 func (d *Deduplication) Float32() ([]float32, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Float32); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceFloat32, nil
 }
@@ -289,7 +289,7 @@ func (d *Deduplication) Float32() ([]float32, error) {
 func (d *Deduplication) Float64() ([]float64, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Float64); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceFloat64, nil
 }
@@ -298,7 +298,7 @@ func (d *Deduplication) Float64() ([]float64, error) {
 func (d *Deduplication) Int() ([]int, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Int); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceInt, nil
 }
@@ -307,7 +307,7 @@ func (d *Deduplication) Int() ([]int, error) {
 func (d *Deduplication) Int64() ([]int64, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Int64); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceInt64, nil
 }
@@ -316,7 +316,7 @@ func (d *Deduplication) Int64() ([]int64, error) {
 func (d *Deduplication) Uint() ([]uint, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Uint); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceUint, nil
 }
@@ -325,7 +325,7 @@ func (d *Deduplication) Uint() ([]uint, error) {
 func (d *Deduplication) Uint64() ([]uint64, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Uint64); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceUint64, nil
 }
@@ -334,7 +334,7 @@ func (d *Deduplication) Uint64() ([]uint64, error) {
 func (d *Deduplication) String() ([]string, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.String); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceString, nil
 }
@@ -343,7 +343,7 @@ func (d *Deduplication) String() ([]string, error) {
 func (d *Deduplication) Struct() (interface{}, error) {
 	defer d.clear()
 	if err := d.errorCheck(reflect.Struct, reflect.Ptr); err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
 	}
 	return d.SliceStruct, nil
 }
