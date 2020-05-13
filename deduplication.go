@@ -73,6 +73,7 @@ func (d *Deduplication) duplicationBool() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationFloat32() reflect.Value {
 	encountered := make(map[float32]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
@@ -88,6 +89,7 @@ func (d *Deduplication) duplicationFloat32() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationFloat64() reflect.Value {
 	encountered := make(map[float64]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
@@ -103,6 +105,7 @@ func (d *Deduplication) duplicationFloat64() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationInt() reflect.Value {
 	encountered := make(map[int]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
@@ -118,6 +121,7 @@ func (d *Deduplication) duplicationInt() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationInt64() reflect.Value {
 	encountered := make(map[int64]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
@@ -133,6 +137,7 @@ func (d *Deduplication) duplicationInt64() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationUint() reflect.Value {
 	encountered := make(map[uint]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
@@ -148,6 +153,7 @@ func (d *Deduplication) duplicationUint() reflect.Value {
 	return newSlice
 }
 
+// nolint: dupl
 func (d *Deduplication) duplicationUint64() reflect.Value {
 	encountered := make(map[uint64]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {

@@ -19,7 +19,7 @@ func main() {
 	if sl, err := dup.Int(); err == nil {
 		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceInt)
+	fmt.Printf("original  slice -> %#v / No change.\n\n", sliceInt)
 
 	fmt.Println("Case: []float64")
 	sliceFloat64 := []float64{0.1, 0.1, 0.2, 0.2, 0.3, 0.3}
@@ -27,7 +27,7 @@ func main() {
 	if sl, err := dup.Float64(); err == nil {
 		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceFloat64)
+	fmt.Printf("original  slice -> %#v / No change.\n\n", sliceFloat64)
 
 	type duplication struct {
 		Name string
@@ -70,7 +70,7 @@ func main() {
 	if sl, err := dup.Struct(); err == nil {
 		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Printf(  "original  slice -> %#v / No change.\n\n", sliceStruct)
+	fmt.Printf("original  slice -> %#v / No change.\n\n", sliceStruct)
 
 	fmt.Println("Case: []Pointer")
 	slicePtr := []*duplication{
@@ -108,12 +108,12 @@ func main() {
 	if sl, err := dup.Struct(); err == nil {
 		fmt.Printf("extracted slice -> %#v\n", sl)
 	}
-	fmt.Printf(  "original  slice -> %#v / No change.\n\n", slicePtr)
+	fmt.Printf("original  slice -> %#v / No change.\n\n", slicePtr)
 
 	// TODO FIXME
 	fmt.Println("Case: []UniqueType")
 	type AgeInt int
-	sliceUnique := []AgeInt{1,2,3,3}
+	sliceUnique := []AgeInt{1, 2, 3, 3}
 	fmt.Println(dedupe.Do(&sliceUnique))
 	fmt.Printf("original  slice -> %#v\n\n", sliceUnique)
 }
