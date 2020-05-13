@@ -1,4 +1,6 @@
 linters-settings:
+  errcheck:
+    ignore: fmt:.*,github.com/go-utils/dedupe:Do
   dupl:
     threshold: 100
   goconst:
