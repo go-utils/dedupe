@@ -45,10 +45,15 @@ original  slice -> []string{"C++", "Go", "Java", "Python", "Ruby", "V"}
 extracted slice -> []float64{0.1, 0.2, 0.3}
 original  slice -> []float64{0.1, 0.1, 0.2, 0.2, 0.3, 0.3}
 ```
-Check [Go Playground](https://play.golang.org/p/QEUKQciGp4J)
+Check [Go Playground](https://play.golang.org/p/QEUKQciGp4J)  
+Check [Other patterns](https://github.com/go-utils/dedupe/blob/master/example/main.go)
 
 # Support
-`[]bool` `[]float32` `[]float64` `[]int` `[]int64` `[]uint` `[]uint64` `[]string` `[]AnyStruct`
+`[]bool` `[]float32` `[]float64` `[]int` `[]int64` `[]uint` `[]uint64` `[]string`  
+`[]struct` `[]*struct` `[]AnyType`
+
+### No Support
+`[]func`
 
 # License
 MIT

@@ -4,15 +4,16 @@ Package dedupe - Deduplication among various types of slices
 package dedupe
 
 import (
-	"fmt"
 	"reflect"
-	"sort"
 
 	"golang.org/x/xerrors"
 )
 
 // Deduplication duplicate exclusion
-// supports type: []bool, []float32, []float64, []int, []int64, []uint, []uint64, []string, []AnyStruct
+//  supports type:
+//    []bool, []float32, []float64, []int, []int64,
+//    []uint, []uint64, []string, []struct, []*struct, []AnyType
+//  no supports type: []func
 type Deduplication struct {
 	SliceBool    []bool
 	SliceFloat32 []float32
@@ -22,7 +23,7 @@ type Deduplication struct {
 	SliceUint    []uint
 	SliceUint64  []uint64
 	SliceString  []string
-	SliceStruct  interface{}
+	SliceAny     interface{}
 
 	NotChange bool
 	Value     *reflect.Value
@@ -37,7 +38,7 @@ func Do(args interface{}) error {
 }
 
 // NewDeduplication constructor
-// field NotChange: true
+// NotChange field: true
 func NewDeduplication() *Deduplication {
 	return &Deduplication{NotChange: true}
 }
@@ -47,6 +48,9 @@ func (d *Deduplication) validation(args interface{}) error {
 	case reflect.Ptr:
 		switch reflect.TypeOf(args).Elem().Kind() {
 		case reflect.Slice, reflect.Array, reflect.Struct:
+			if d.typeElem(reflect.ValueOf(args).Type()).Kind() == reflect.Func {
+				return xerrors.New("function is not supported")
+			}
 			targetValue := reflect.Indirect(reflect.ValueOf(args))
 			d.Value = &targetValue
 		default:
@@ -58,147 +62,95 @@ func (d *Deduplication) validation(args interface{}) error {
 	return d.Error
 }
 
-func (d *Deduplication) duplicationBool() reflect.Value {
-	encountered := make(map[bool]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := d.Value.Index(i).Bool()
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceBool = append(d.SliceBool, element)
-		}
+func (d *Deduplication) typeElem(src reflect.Type) reflect.Type {
+	el := src.Elem()
+	switch el.Kind() {
+	case reflect.Array, reflect.Slice:
+		return d.typeElem(el)
+	case reflect.Ptr:
+		return d.typeElem(el)
+	default:
+		return el
 	}
-	sort.Slice(d.SliceBool, func(i, j int) bool { return fmt.Sprint(d.SliceBool[i]) < fmt.Sprint(d.SliceBool[j]) })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]bool{}), len(d.SliceBool), len(d.SliceBool))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceBool))
-	return newSlice
 }
 
-// nolint: dupl
-func (d *Deduplication) duplicationFloat32() reflect.Value {
-	encountered := make(map[float32]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := float32(d.Value.Index(i).Float())
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceFloat32 = append(d.SliceFloat32, element)
-		}
+func (d *Deduplication) valueElem(src reflect.Value) reflect.Value {
+	el := src.Elem()
+	switch el.Kind() {
+	case reflect.Ptr:
+		return d.valueElem(el)
+	default:
+		return el
 	}
-	sort.Slice(d.SliceFloat32, func(i, j int) bool { return d.SliceFloat32[i] < d.SliceFloat32[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]float32{}), len(d.SliceFloat32), len(d.SliceFloat32))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceFloat32))
-	return newSlice
 }
 
-// nolint: dupl
-func (d *Deduplication) duplicationFloat64() reflect.Value {
-	encountered := make(map[float64]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := d.Value.Index(i).Float()
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceFloat64 = append(d.SliceFloat64, element)
-		}
-	}
-	sort.Slice(d.SliceFloat64, func(i, j int) bool { return d.SliceFloat64[i] < d.SliceFloat64[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]float64{}), len(d.SliceFloat64), len(d.SliceFloat64))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceFloat64))
-	return newSlice
-}
-
-// nolint: dupl
-func (d *Deduplication) duplicationInt() reflect.Value {
-	encountered := make(map[int]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := int(d.Value.Index(i).Int())
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceInt = append(d.SliceInt, element)
-		}
-	}
-	sort.Slice(d.SliceInt, func(i, j int) bool { return d.SliceInt[i] < d.SliceInt[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]int{}), len(d.SliceInt), len(d.SliceInt))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceInt))
-	return newSlice
-}
-
-// nolint: dupl
-func (d *Deduplication) duplicationInt64() reflect.Value {
-	encountered := make(map[int64]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := d.Value.Index(i).Int()
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceInt64 = append(d.SliceInt64, element)
-		}
-	}
-	sort.Slice(d.SliceInt64, func(i, j int) bool { return d.SliceInt64[i] < d.SliceInt64[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]int64{}), len(d.SliceInt64), len(d.SliceInt64))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceInt64))
-	return newSlice
-}
-
-// nolint: dupl
-func (d *Deduplication) duplicationUint() reflect.Value {
-	encountered := make(map[uint]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := uint(d.Value.Index(i).Uint())
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceUint = append(d.SliceUint, element)
-		}
-	}
-	sort.Slice(d.SliceUint, func(i, j int) bool { return d.SliceUint[i] < d.SliceUint[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]uint{}), len(d.SliceUint), len(d.SliceUint))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceUint))
-	return newSlice
-}
-
-// nolint: dupl
-func (d *Deduplication) duplicationUint64() reflect.Value {
-	encountered := make(map[uint64]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := d.Value.Index(i).Uint()
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceUint64 = append(d.SliceUint64, element)
-		}
-	}
-	sort.Slice(d.SliceUint64, func(i, j int) bool { return d.SliceUint64[i] < d.SliceUint64[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]uint64{}), len(d.SliceUint64), len(d.SliceUint64))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceUint64))
-	return newSlice
-}
-
-func (d *Deduplication) duplicationString() reflect.Value {
-	encountered := make(map[string]struct{}, d.Value.Len())
-	for i := 0; i < d.Value.Len(); i++ {
-		element := d.Value.Index(i).String()
-		if _, ok := encountered[element]; !ok {
-			encountered[element] = struct{}{}
-			d.SliceString = append(d.SliceString, element)
-		}
-	}
-	sort.Slice(d.SliceString, func(i, j int) bool { return d.SliceString[i] < d.SliceString[j] })
-	newSlice := reflect.MakeSlice(reflect.TypeOf([]string{}), 0, len(d.SliceString))
-	newSlice = reflect.AppendSlice(newSlice, reflect.ValueOf(d.SliceString))
-	return newSlice
-}
-
-func (d *Deduplication) duplicationStruct(args interface{}) reflect.Value {
-	rv := reflect.Indirect(reflect.ValueOf(args))
-	slice := reflect.MakeSlice(rv.Type(), 0, d.Value.Len())
+func (d *Deduplication) duplication() reflect.Value {
+	slice := reflect.MakeSlice(d.Value.Type(), 0, 0)
+	encountered := make(map[interface{}]struct{}, d.Value.Len())
 	for i := 0; i < d.Value.Len(); i++ {
 		element := d.Value.Index(i)
-		for j := 0; j < slice.Len(); j++ {
-			if !reflect.DeepEqual(element.Interface(), slice.Index(j).Interface()) {
-				slice = reflect.Append(slice, element)
-			}
+		key := element.Interface()
+		if element.Kind() == reflect.Ptr {
+			key = d.valueElem(element).Interface()
 		}
-		if i == 0 {
+		if _, ok := encountered[key]; !ok {
+			encountered[key] = struct{}{}
 			slice = reflect.Append(slice, element)
 		}
 	}
-	d.SliceStruct = slice.Interface()
+
+	switch d.Value.Type().Elem().Kind() {
+	case reflect.Bool:
+		item, ok := slice.Interface().([]bool)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceBool = item
+		}
+	case reflect.Float32:
+		item, ok := slice.Interface().([]float32)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceFloat32 = item
+		}
+	case reflect.Float64:
+		item, ok := slice.Interface().([]float64)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceFloat64 = item
+		}
+	case reflect.Int:
+		item, ok := slice.Interface().([]int)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceInt = item
+		}
+	case reflect.Int64:
+		item, ok := slice.Interface().([]int64)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceInt64 = item
+		}
+	case reflect.Uint:
+		item, ok := slice.Interface().([]uint)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceUint = item
+		}
+	case reflect.Uint64:
+		item, ok := slice.Interface().([]uint64)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceUint64 = item
+		}
+	case reflect.String:
+		item, ok := slice.Interface().([]string)
+		if ok {
+			d.Error = xerrors.Errorf("cast failed. typecast yourself using `Any()`")
+			d.SliceString = item
+		}
+	}
+
+	d.SliceAny = slice.Interface()
 	return slice
 }
 
@@ -210,32 +162,17 @@ func (d *Deduplication) Do(args interface{}) error {
 	}
 
 	var value reflect.Value
-	switch types := args.(type) {
-	case *[]bool:
-		value = d.duplicationBool()
-	case *[]float32:
-		value = d.duplicationFloat32()
-	case *[]float64:
-		value = d.duplicationFloat64()
-	case *[]int:
-		value = d.duplicationInt()
-	case *[]int64:
-		value = d.duplicationInt64()
-	case *[]uint:
-		value = d.duplicationUint()
-	case *[]uint64:
-		value = d.duplicationUint64()
-	case *[]string:
-		value = d.duplicationString()
+	switch args.(type) {
+	case *[]bool, *[]int, *[]int64, *[]uint, *[]uint64,
+		*[]float32, *[]float64, *[]string:
+		value = d.duplication()
 	case []bool, []int, []int64, []uint, []uint64,
 		[]float32, []float64, []string:
 		return xerrors.New("please pass by address")
 	default:
-		switch d.Value.Type().Elem().Kind() {
-		case reflect.Struct, reflect.Ptr:
-			value = d.duplicationStruct(args)
-		default:
-			return xerrors.Errorf("invalid type: %#v", types)
+		value = d.duplication()
+		if d.Error != nil {
+			return xerrors.Errorf("error in duplication method: %w", d.Error)
 		}
 	}
 
@@ -339,13 +276,13 @@ func (d *Deduplication) String() ([]string, error) {
 	return d.SliceString, nil
 }
 
-// Struct returns the deduplicated slice
-func (d *Deduplication) Struct() (interface{}, error) {
+// Any returns the deduplicated slice
+func (d *Deduplication) Any() (interface{}, error) {
 	defer d.clear()
-	if err := d.errorCheck(reflect.Struct, reflect.Ptr); err != nil {
-		return nil, xerrors.Errorf("error in errorCheck method: %w", err)
+	if d.Error != nil {
+		return nil, xerrors.Errorf("error in Deduplication.Error field: %w", d.Error)
 	}
-	return d.SliceStruct, nil
+	return d.SliceAny, nil
 }
 
 func (d *Deduplication) clear() {
