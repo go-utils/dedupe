@@ -116,8 +116,8 @@ func main() {
 	fmt.Printf("original  slice -> %#v // No change.\n\n", slicePtr)
 
 	fmt.Println("Case: []UniqueType")
-	type AgeInt int
-	sliceUnique := []AgeInt{1, 2, 3, 3}
+	type Int int
+	sliceUnique := []Int{1, 2, 3, 3}
 	dedupe.Do(&sliceUnique)
 	fmt.Printf("original  slice -> %#v\n\n", sliceUnique)
 
